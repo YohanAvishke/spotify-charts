@@ -7,34 +7,34 @@
  * https://developer.spotify.com/web-api/authorization-guide/#authorization_code_flow
  */
 
-var express = require('express') // Express web server framework
-var request = require('request') // "Request" library
-var cors = require('cors')
-var querystring = require('querystring')
-var cookieParser = require('cookie-parser')
+let express = require('express') // Express web server framework
+let request = require('request') // "Request" library
+let cors = require('cors')
+let querystring = require('querystring')
+let cookieParser = require('cookie-parser')
 
-var client_id = 'e21166d9aed04d29b03eec1425faafbf' // Your client id
-var client_secret = '37f8c9cb0a5c42f98c4ea876207bc0b3' // Your secret
-var redirect_uri = 'http://localhost:8888/callback' // Your redirect uri
+let client_id = 'e21166d9aed04d29b03eec1425faafbf' // Your client id
+let client_secret = '37f8c9cb0a5c42f98c4ea876207bc0b3' // Your secret
+let redirect_uri = 'http://localhost:8888/callback' // Your redirect uri
 
 /**
  * Generates a random string containing numbers and letters
  * @param  {number} length The length of the string
  * @return {string} The generated string
  */
-var generateRandomString = function (length) {
-    var text = ''
-    var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+let generateRandomString = function (length) {
+    let text = ''
+    let possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
 
-    for (var i = 0; i < length; i++) {
+    for (let i = 0; i < length; i++) {
         text += possible.charAt(Math.floor(Math.random() * possible.length))
     }
     return text
 }
 
-var stateKey = 'spotify_auth_state'
+let stateKey = 'spotify_auth_state'
 
-var app = express()
+let app = express()
 
 app.use(express.static(__dirname + '/public'))
     .use(cors())
@@ -42,11 +42,11 @@ app.use(express.static(__dirname + '/public'))
 
 app.get('/login', function (req, res) {
 
-    var state = generateRandomString(16)
+    let state = generateRandomString(16)
     res.cookie(stateKey, state)
 
     // your application requests authorization
-    var scope = 'user-read-private user-read-email'
+    let scope = 'user-read-private user-read-email'
     res.redirect('https://accounts.spotify.com/authorize?' +
         querystring.stringify({
             response_type: 'code',
@@ -62,9 +62,9 @@ app.get('/callback', function (req, res) {
     // your application requests refresh and access tokens
     // after checking the state parameter
 
-    var code = req.query.code || null
-    var state = req.query.state || null
-    var storedState = req.cookies ? req.cookies[stateKey] : null
+    let code = req.query.code || null
+    let state = req.query.state || null
+    let storedState = req.cookies ? req.cookies[stateKey] : null
 
     if (state === null || state !== storedState) {
         res.redirect('/#' +
@@ -73,7 +73,7 @@ app.get('/callback', function (req, res) {
             }))
     } else {
         res.clearCookie(stateKey)
-        var authOptions = {
+        let authOptions = {
             url: 'https://accounts.spotify.com/api/token',
             form: {
                 code: code,
@@ -89,10 +89,10 @@ app.get('/callback', function (req, res) {
         request.post(authOptions, function (error, response, body) {
             if (!error && response.statusCode === 200) {
 
-                var access_token = body.access_token,
+                let access_token = body.access_token,
                     refresh_token = body.refresh_token
 
-                var options = {
+                let options = {
                     url: 'https://api.spotify.com/v1/me/player/recently-played',
                     headers: {'Authorization': 'Bearer ' + access_token},
                     json: true
