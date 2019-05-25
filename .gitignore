@@ -1,4 +1,6 @@
 # intellij
-
 .idea/
-spotify-charts.iml
+
+#node
+node_modules/
+package-lock.json
