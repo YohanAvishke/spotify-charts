@@ -22,7 +22,7 @@
         <a href="/login" class="btn btn-primary">Log in with Spotify</a>
     </div>
     <div id="loggedin" class="chart-container">
-        <canvas id="valency-chart" width="400" height="400"></canvas>
+        <canvas id="valency-chart" width="400" height="600"></canvas>
     </div>
 </div>
 
@@ -102,7 +102,7 @@
                 labels.push(played_at)
                 data.push(valence)
             }
-            renderChart("valency-chart", "bar", labels, data)
+            renderChart("valency-chart", "horizontalBar", labels, data)
         }
 
         function renderData(template, url, target, isToAppend, successPreCall = null, successCallback = null, webChangeCall = null, errorCallback = null) {
@@ -147,13 +147,13 @@
 
         function renderChart(canvas, type, labels, data) {
             let ctx = document.getElementById(canvas).getContext('2d')
-            if (type === "bar") {
+            if (type === "horizontalBar") {
                 let myChart = new Chart(ctx, {
                     type: type,
                     data: {
                         labels: labels,
                         datasets: [{
-                            label: 'Keywords', // Name the series
+                            label: 'Valency', // Name the series
                             data: data, // Specify the data values array
                             backgroundColor: '#f39c12',
                             borderColor: '#f39c12',
