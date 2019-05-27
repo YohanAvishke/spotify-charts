@@ -13,8 +13,8 @@ let cors = require('cors')
 let querystring = require('querystring')
 let cookieParser = require('cookie-parser')
 
-let client_id = 'e21166d9aed04d29b03eec1425faafbf' // Your client id
-let client_secret = '37f8c9cb0a5c42f98c4ea876207bc0b3' // Your secret
+let client_id = '7172a670e0da40f1991cafdfcd930682' // Your client id
+let client_secret = '3f6b3f59d9064a099a1fb7aabda62c2a' // Your secret
 let redirect_uri = 'http://localhost:8888/callback' // Your redirect uri
 
 /**
@@ -46,7 +46,7 @@ app.get('/login', function (req, res) {
     res.cookie(stateKey, state)
 
     // your application requests authorization
-    let scope = 'user-read-private user-read-email'
+    let scope = 'user-read-private user-read-email user-read-recently-played'
     res.redirect('https://accounts.spotify.com/authorize?' +
         querystring.stringify({
             response_type: 'code',
@@ -81,7 +81,7 @@ app.get('/callback', function (req, res) {
                 grant_type: 'authorization_code'
             },
             headers: {
-                'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64'))
+                'Authorization': 'Basic ' + (Buffer.from(client_id + ':' + client_secret).toString('base64'))
             },
             json: true
         }
@@ -91,17 +91,6 @@ app.get('/callback', function (req, res) {
 
                 let access_token = body.access_token,
                     refresh_token = body.refresh_token
-
-                let options = {
-                    url: 'https://api.spotify.com/v1/me/player/recently-played',
-                    headers: {'Authorization': 'Bearer ' + access_token},
-                    json: true
-                }
-
-                // use the access token to access the Spotify Web API
-                request.get(options, function (error, response, body) {
-                    console.log(body)
-                })
 
                 // we can also pass the token to the browser to make requests from there
                 res.redirect('/#' +

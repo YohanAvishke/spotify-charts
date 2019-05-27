@@ -5,7 +5,7 @@
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
     <style type="text/css">
         #login, #loggedin {
-            display: none
+            display: none;
         }
 
         .text-overflow {
@@ -15,8 +15,6 @@
             width: 500px;
         }
     </style>
-</head>
-
 <body>
 <div class="container">
     <div id="login">
@@ -67,15 +65,30 @@
         <dd class="text-overflow">{{refresh_token}}</dd>
     </dl>
 </script>
-
 <script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0-alpha.1/handlebars.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/mustache.js/3.0.1/mustache.min.js"></script>
 <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+<!--chart js-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"
+        type="text/javascript"></script>
 <script>
     (function () {
-        /**
-         * Obtains parameters from the hash of the URL
-         * @return Object
-         */
+        let tracks = []
+        let spotify_api = 'https://api.spotify.com/v1'
+
+        function showNotification(type, message, timer = 2000) {
+            $.notify({
+                message: message
+            }, {
+                type: type,
+                timer: timer,
+                placement: {
+                    from: 'top',
+                    align: 'right'
+                }
+            })
+        }
+
         function getHashParams() {
             let hashParams = {}
             let e, r = /([^&=]+)=?([^&]*)/g,
@@ -86,13 +99,92 @@
             return hashParams
         }
 
-        let userProfileSource = document.getElementById('user-profile-template').innerHTML,
-            userProfileTemplate = Handlebars.compile(userProfileSource),
-            userProfilePlaceholder = document.getElementById('user-profile')
+        function processLogin(isSuccess) {
+            if (isSuccess) {
+                $('#login').hide()
+                $('#loggedin').show()
+            } else {
+                $('#login').show()
+                $('#loggedin').hide()
+            }
+        }
 
-        let oauthSource = document.getElementById('oauth-template').innerHTML,
-            oauthTemplate = Handlebars.compile(oauthSource),
-            oauthPlaceholder = document.getElementById('oauth')
+        function getTracks(data) {
+            data.items.forEach(function (item) {
+                let temp = {
+                    "id": item.track.id,
+                    "played_at": item.played_at
+                }
+                tracks.push(temp)
+            })
+            getTracksFeatures()
+            return tracks
+        }
+
+        function getTracksFeatures() {
+            let ids = ""
+            for (let i = 0; i < tracks.length; i++) {
+                ids = ids.concat(tracks[i].id + ",")
+            }
+            renderData(null, "/audio-features/?ids=" + ids, null, false, getValence)
+        }
+
+        function getValence(data) {
+            console.log(data)
+        }
+
+        function renderDataWithObject(template, target, object, isToAppend = false, successCallback = null) {
+            let templateStructure = $(template).html()
+            let output = Mustache.render(templateStructure, object)
+            if (isToAppend) {
+                $(target).append(output)
+            } else {
+                $(target).hide().html(output).fadeIn('slow')
+            }
+            if (successCallback != null) {
+                successCallback(object)
+            }
+        }
+
+        function renderData(template, url, target, isToAppend, successPreCall = null, successCallback = null, webChangeCall = null, errorCallback = null) {
+            $.ajax({
+                type: "get",
+                url: spotify_api + url,
+                dataType: "json",
+                headers: {
+                    "Authorization": "Bearer " + access_token
+                },
+                success: function (data, textStatus, jqXHR) {
+                    if (successPreCall) {
+                        data = successPreCall(data)
+                    }
+                    if (template) {
+                        let status = jqXHR.status
+                        let templateStructure = $(template).html()
+                        let output = Mustache.render(templateStructure, data)
+                        if (isToAppend) {
+                            $(target).append(output)
+                        } else {
+                            $(target).hide().html(output).fadeIn('slow')
+                        }
+                    }
+                    if (successCallback) {
+                        successCallback(data, textStatus, jqXHR)
+                    }
+                    if (webChangeCall) {
+                        webChangeCall(true)
+                    }
+                },
+                error: function (jqXHR) {
+                    let status = jqXHR.status
+                    console.log(jqXHR)
+                    showNotification('danger', 'Something went wrong')
+                    if (errorCallback != null) {
+                        errorCallback()
+                    }
+                }
+            })
+        }
 
         let params = getHashParams()
 
@@ -105,27 +197,19 @@
         } else {
             if (access_token) {
                 // render oauth info
+                let oauthSource = document.getElementById('oauth-template').innerHTML,
+                    oauthTemplate = Handlebars.compile(oauthSource),
+                    oauthPlaceholder = document.getElementById('oauth')
+
                 oauthPlaceholder.innerHTML = oauthTemplate({
                     access_token: access_token,
                     refresh_token: refresh_token
                 })
-
-                $.ajax({
-                    url: 'https://api.spotify.com/v1/me',
-                    headers: {
-                        'Authorization': 'Bearer ' + access_token
-                    },
-                    success: function (response) {
-                        userProfilePlaceholder.innerHTML = userProfileTemplate(response)
-
-                        $('#login').hide()
-                        $('#loggedin').show()
-                    }
-                })
+                renderData("#user-profile-template", "/me", "#user-profile", false, null, null, processLogin)
+                renderData(null, "/me/player/recently-played", null, false, getTracks)
             } else {
                 // render initial screen
-                $('#login').show()
-                $('#loggedin').hide()
+                processLogin(false)
             }
         }
     })()
