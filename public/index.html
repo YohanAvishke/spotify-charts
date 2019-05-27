@@ -21,6 +21,9 @@
         <h1>This is an example of the Authorization Code flow</h1>
         <a href="/login" class="btn btn-primary">Log in with Spotify</a>
     </div>
+    <div id="loggedin" class="chart-container">
+        <canvas id="valency-chart" width="400" height="400"></canvas>
+    </div>
 </div>
 
 <script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0-alpha.1/handlebars.min.js"></script>
@@ -75,17 +78,31 @@
         }
 
         function getValence(data) {
+            let temp = tracks
+            tracks = []
             let features = data.audio_features
             for (let i = 0; i < features.length; i++) {
                 let valence = features[i].valence
-                let {id, played_at} = tracks[i]
-                tracks[i] = {
+                let {id, played_at} = temp[i]
+                tracks.push({
                     "id": id,
                     "played_at": played_at,
-                    "valence": valence
-                }
+                    "valence": String(valence)
+                })
             }
+            drawValenceChart()
             return tracks
+        }
+
+        function drawValenceChart(isSuccess) {
+            let labels = []
+            let data = []
+            for (let i = 0; i < tracks.length; i++) {
+                let {played_at, valence} = tracks[i]
+                labels.push(played_at)
+                data.push(valence)
+            }
+            renderChart("valency-chart", "bar", labels, data)
         }
 
         function renderData(template, url, target, isToAppend, successPreCall = null, successCallback = null, webChangeCall = null, errorCallback = null) {
@@ -128,6 +145,40 @@
             })
         }
 
+        function renderChart(canvas, type, labels, data) {
+            let ctx = document.getElementById(canvas).getContext('2d')
+            if (type === "bar") {
+                let myChart = new Chart(ctx, {
+                    type: type,
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Keywords', // Name the series
+                            data: data, // Specify the data values array
+                            backgroundColor: '#f39c12',
+                            borderColor: '#f39c12',
+                            borderWidth: 1 // Specify bar border width
+                        }]
+                    },
+                    options: {
+                        responsive: true, // Instruct chart js to respond nicely.
+                        maintainAspectRatio: false, // Add to prevent default behaviour of full-width/height
+                        scales: {
+                            yAxes: [
+                                {
+                                    ticks: {
+                                        min: 0,
+                                        max: 1
+                                    }
+                                },
+                            ],
+                        }
+                    },
+
+                })
+            }
+        }
+
         let params = getHashParams()
 
         let access_token = params.access_token,
@@ -138,7 +189,6 @@
             window.location.redirect("http://localhost:8888/login")
         } else {
             if (access_token) {
-
                 renderData(null, "/me", null, false, null, null, processLogin)
                 renderData(null, "/me/player/recently-played", null, false, getTracks)
             } else {
