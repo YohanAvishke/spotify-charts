@@ -130,7 +130,12 @@
         }
 
         function getValence(data) {
-            console.log(data)
+            let features = data.audio_features
+            for (let i = 0; i < features.length ; i++) {
+                let valence = features[i].valence
+                tracks[i].append(valence)
+            }
+            console.log(tracks)
         }
 
         function renderDataWithObject(template, target, object, isToAppend = false, successCallback = null) {
@@ -193,7 +198,7 @@
             error = params.error
 
         if (error) {
-            alert('There was an error during the authentication')
+            window.location.redirect("http://localhost:8888/login")
         } else {
             if (access_token) {
                 // render oauth info
