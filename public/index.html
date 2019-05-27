@@ -21,12 +21,6 @@
         <h1>This is an example of the Authorization Code flow</h1>
         <a href="/login" class="btn btn-primary">Log in with Spotify</a>
     </div>
-    <div id="loggedin">
-        <div id="user-profile">
-        </div>
-        <div id="oauth">
-        </div>
-    </div>
 </div>
 
 <script id="user-profile-template" type="text/x-handlebars-template">
@@ -56,15 +50,6 @@
     </div>
 </script>
 
-<script id="oauth-template" type="text/x-handlebars-template">
-    <h2>oAuth info</h2>
-    <dl class="dl-horizontal">
-        <dt>Access token</dt>
-        <dd class="text-overflow">{{access_token}}</dd>
-        <dt>Refresh token</dt>
-        <dd class="text-overflow">{{refresh_token}}</dd>
-    </dl>
-</script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0-alpha.1/handlebars.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/mustache.js/3.0.1/mustache.min.js"></script>
 <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
@@ -131,11 +116,16 @@
 
         function getValence(data) {
             let features = data.audio_features
-            for (let i = 0; i < features.length ; i++) {
+            for (let i = 0; i < features.length; i++) {
                 let valence = features[i].valence
-                tracks[i].append(valence)
+                let {id, played_at} = tracks[i]
+                tracks[i] = {
+                    "id": id,
+                    "played_at": played_at,
+                    "valence": valence
+                }
             }
-            console.log(tracks)
+            return tracks
         }
 
         function renderDataWithObject(template, target, object, isToAppend = false, successCallback = null) {
