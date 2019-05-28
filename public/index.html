@@ -7,13 +7,6 @@
         #login, #loggedin {
             display: none;
         }
-
-        .text-overflow {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            width: 500px;
-        }
     </style>
 <body>
 <div class="container">
@@ -22,7 +15,7 @@
         <a href="/login" class="btn btn-primary">Log in with Spotify</a>
     </div>
     <div id="loggedin" class="chart-container">
-        <canvas id="valency-chart" width="400" height="600"></canvas>
+        <canvas id="valency-chart" height="700"></canvas>
     </div>
 </div>
 
@@ -94,6 +87,14 @@
             return tracks
         }
 
+        function getPercentage(data) {
+            const sum = data.reduce((partial_sum, number) => partial_sum + Number(number), 0);
+            for (let i = 0; i < data.length; i++) {
+                data[i] = Math.trunc(((data[i] / sum) * 100) * 10) / 10
+            }
+            return data
+        }
+
         function drawValenceChart(isSuccess) {
             let labels = []
             let data = []
@@ -102,7 +103,7 @@
                 labels.push(played_at)
                 data.push(valence)
             }
-            renderChart("valency-chart", "horizontalBar", labels, data)
+            renderChart("valency-chart", "horizontalBar", labels, data, getPercentage)
         }
 
         function renderData(template, url, target, isToAppend, successPreCall = null, successCallback = null, webChangeCall = null, errorCallback = null) {
@@ -145,8 +146,9 @@
             })
         }
 
-        function renderChart(canvas, type, labels, data) {
+        function renderChart(canvas, type, labels, data, successPreCall = null) {
             let ctx = document.getElementById(canvas).getContext('2d')
+            data = successPreCall(data)
             if (type === "horizontalBar") {
                 let myChart = new Chart(ctx, {
                     type: type,
@@ -155,10 +157,9 @@
                         datasets: [{
                             label: 'Valency', // Name the series
                             data: data, // Specify the data values array
-                            backgroundColor: '#f39c12',
-                            borderColor: '#f39c12',
-                            borderWidth: 1 // Specify bar border width
-                        }]
+                            backgroundColor: '#14B2A1',
+                            hoverBackgroundColor: '#108e80'
+                        }],
                     },
                     options: {
                         responsive: true, // Instruct chart js to respond nicely.
@@ -168,13 +169,12 @@
                                 {
                                     ticks: {
                                         min: 0,
-                                        max: 1
+                                        max: 100
                                     }
                                 },
                             ],
                         }
-                    },
-
+                    }
                 })
             }
         }
