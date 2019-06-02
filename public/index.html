@@ -96,12 +96,12 @@
         function drawValenceChart(isSuccess) {
             let labels = []
             let data = []
-            for (let i = 0; i < tracks.length; i++) {
+            for (let i = tracks.length - 1; i >= 0; i--) {
                 let {played_at, valence} = tracks[i]
                 labels.push(played_at)
                 data.push(valence)
             }
-            renderChart("valency-chart", "horizontalBar", labels, data, getPercentage)
+            renderChart("valency-chart", "line", labels, data, getPercentage)
         }
 
         authorize()

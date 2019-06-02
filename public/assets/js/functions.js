@@ -18,9 +18,9 @@ function getHashParams() {
 }
 
 function getPercentage(data) {
-    const sum = data.reduce((partial_sum, number) => partial_sum + Number(number), 0);
+    // const sum = data.reduce((partial_sum, number) => partial_sum + Number(number), 0);
     for (let i = 0; i < data.length; i++) {
-        data[i] = Math.trunc(((data[i] / sum) * 100) * 10) / 10
+        data[i] = Math.trunc(((data[i]) * 100) * 10) / 10
     }
     return data
 }
@@ -68,7 +68,7 @@ function renderData(template, url, target, isToAppend, successPreCall = null, su
 function renderChart(canvas, type, labels, data, successPreCall = null) {
     let ctx = document.getElementById(canvas).getContext('2d')
     data = successPreCall(data)
-    if (type === "horizontalBar") {
+    if (type === "line") {
         let myChart = new Chart(ctx, {
             type: type,
             data: {
