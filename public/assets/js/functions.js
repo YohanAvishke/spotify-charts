@@ -1,5 +1,11 @@
-let tracks = []
+"use strict"
+
 let spotify_api = 'https://api.spotify.com/v1'
+
+let params = getHashParams()
+let access_token = params.access_token,
+    refresh_token = params.refresh_token,
+    error = params.error
 
 function getHashParams() {
     let hashParams = {}
@@ -11,70 +17,12 @@ function getHashParams() {
     return hashParams
 }
 
-function processLogin(isSuccess) {
-    if (isSuccess) {
-        $('#login').hide()
-        $('#loggedin').show()
-    } else {
-        $('#login').show()
-        $('#loggedin').hide()
-    }
-}
-
-function getTracks(data) {
-    data.items.forEach(function (item) {
-        let temp = {
-            "id": item.track.id,
-            "played_at": item.played_at
-        }
-        tracks.push(temp)
-    })
-    getTracksFeatures()
-    return tracks
-}
-
-function getTracksFeatures() {
-    let ids = ""
-    for (let i = 0; i < tracks.length; i++) {
-        ids = ids.concat(tracks[i].id + ",")
-    }
-    renderData(null, "/audio-features/?ids=" + ids, null, false, getValence)
-}
-
-function getValence(data) {
-    let temp = tracks
-    tracks = []
-    let features = data.audio_features
-    for (let i = 0; i < features.length; i++) {
-        let valence = features[i].valence
-        let {id, played_at} = temp[i]
-        tracks.push({
-            "id": id,
-            "played_at": played_at,
-            "valence": String(valence)
-        })
-    }
-    drawValenceChart()
-    return tracks
-}
-
 function getPercentage(data) {
     const sum = data.reduce((partial_sum, number) => partial_sum + Number(number), 0);
     for (let i = 0; i < data.length; i++) {
         data[i] = Math.trunc(((data[i] / sum) * 100) * 10) / 10
     }
     return data
-}
-
-function drawValenceChart(isSuccess) {
-    let labels = []
-    let data = []
-    for (let i = 0; i < tracks.length; i++) {
-        let {played_at, valence} = tracks[i]
-        labels.push(played_at)
-        data.push(valence)
-    }
-    renderChart("valency-chart", "horizontalBar", labels, data, getPercentage)
 }
 
 function renderData(template, url, target, isToAppend, successPreCall = null, successCallback = null, webChangeCall = null, errorCallback = null) {
@@ -149,9 +97,3 @@ function renderChart(canvas, type, labels, data, successPreCall = null) {
         })
     }
 }
-
-let params = getHashParams()
-
-var access_token = params.access_token,
-    refresh_token = params.refresh_token,
-    error = params.error
