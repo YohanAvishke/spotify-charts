@@ -35,24 +35,28 @@ function renderData(template, url, target, isToAppend, successPreCall = null, su
             "Authorization": "Bearer " + access_token
         },
         success: function (data, textStatus, jqXHR) {
-            if (successPreCall) {
-                data = successPreCall(data)
-            }
-            if (template) {
-                let status = jqXHR.status
-                let templateStructure = $(template).html()
-                let output = Mustache.render(templateStructure, data)
-                if (isToAppend) {
-                    $(target).append(output)
-                } else {
-                    $(target).hide().html(output).fadeIn('slow')
+            try {
+                if (successPreCall) {
+                    data = successPreCall(data)
                 }
-            }
-            if (successCallback) {
-                successCallback(data, textStatus, jqXHR)
-            }
-            if (webChangeCall) {
-                webChangeCall(true)
+                if (template) {
+                    let status = jqXHR.status
+                    let templateStructure = $(template).html()
+                    let output = Mustache.render(templateStructure, data)
+                    if (isToAppend) {
+                        $(target).append(output)
+                    } else {
+                        $(target).hide().html(output).fadeIn('slow')
+                    }
+                }
+                if (successCallback) {
+                    successCallback(data, textStatus, jqXHR)
+                }
+                if (webChangeCall) {
+                    webChangeCall(true)
+                }
+            }catch (e) {
+                alert("No data")
             }
         },
         error: function (jqXHR) {
