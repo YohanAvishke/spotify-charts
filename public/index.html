@@ -37,8 +37,9 @@
                 window.location.redirect("http://localhost:8888/login")
             } else {
                 if (access_token) {
-                    renderData(null, "/me", null, false, null, null, processLogin)
-                    renderData(null, "/me/player/recently-played", null, false, getTracks)
+                    // let todayUnixTimeStamp = new Date()
+                    // todayUnixTimeStamp.setHours(0, 0, 1)
+                    renderData(null, "/me/player/recently-played?limit=50", null, false, getTracks, null, processLogin)
                 } else {
                     // render initial screen
                     processLogin(false)

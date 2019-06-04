@@ -6,6 +6,7 @@ let params = getHashParams()
 let access_token = params.access_token,
     refresh_token = params.refresh_token,
     error = params.error
+console.log(access_token)
 
 function getHashParams() {
     let hashParams = {}
