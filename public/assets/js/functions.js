@@ -55,7 +55,8 @@ function renderData(template, url, target, isToAppend, successPreCall = null, su
                 if (webChangeCall) {
                     webChangeCall(true)
                 }
-            }catch (e) {
+            } catch (e) {
+                console.log(e)
                 alert("No data")
             }
         },
@@ -79,24 +80,46 @@ function renderChart(canvas, type, labels, data, successPreCall = null) {
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Valency', // Name the series
-                    data: data, // Specify the data values array
-                    backgroundColor: '#14B2A1',
-                    hoverBackgroundColor: '#108e80'
+                    label: 'Valency',
+                    backgroundColor: 'rgb(54, 162, 235)',
+                    borderColor: 'rgb(54, 162, 235)',
+                    fill: false,
+                    data: data,
                 }],
             },
             options: {
                 responsive: true, // Instruct chart js to respond nicely.
-                maintainAspectRatio: false, // Add to prevent default behaviour of full-width/height
+                title: {
+                    display: true,
+                    text: 'Valence chart'
+                },
+                tooltips: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                },
                 scales: {
-                    yAxes: [
-                        {
-                            ticks: {
-                                min: 0,
-                                max: 100
-                            }
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Date'
+                        }
+                    }],
+                    yAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Valence'
                         },
-                    ],
+                        ticks: {
+                            min: 0,
+                            max: 100
+                        }
+                    }]
                 }
             }
         })
