@@ -84,6 +84,7 @@
             for (let i = 0; i < features.length; i++) {
                 let valence = features[i].valence
                 let {id, played_at} = temp[i]
+                // console.log(played_at.split(/\[T]/g)
                 tracks.push({
                     "id": id,
                     "played_at": played_at,

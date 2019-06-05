@@ -104,6 +104,11 @@ function renderChart(canvas, type, labels, data, successPreCall = null) {
                 scales: {
                     xAxes: [{
                         display: true,
+                        gridLines: {
+                            display: true,
+                            drawBorder: true,
+                            drawOnChartArea: false,
+                        },
                         scaleLabel: {
                             display: true,
                             labelString: 'Date'
@@ -111,6 +116,11 @@ function renderChart(canvas, type, labels, data, successPreCall = null) {
                     }],
                     yAxes: [{
                         display: true,
+                        gridLines: {
+                            display: true,
+                            drawBorder: true,
+                            drawOnChartArea: false,
+                        },
                         scaleLabel: {
                             display: true,
                             labelString: 'Valence'
