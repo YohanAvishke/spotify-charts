@@ -13,9 +13,9 @@ let cors = require('cors')
 let querystring = require('querystring')
 let cookieParser = require('cookie-parser')
 
-let client_id = '7172a670e0da40f1991cafdfcd930682' // Your client id
-let client_secret = '3f6b3f59d9064a099a1fb7aabda62c2a' // Your secret
-let redirect_uri = 'http://localhost:8888/callback' // Your redirect uri
+let client_id = process.env.CLIENT_ID// Your client id
+let client_secret = process.env.CLIENT_SECRET // Your secret
+let redirect_uri = process.env.REDIRECT_URL // Your redirect uri
 
 /**
  * Generates a random string containing numbers and letters

@@ -108,11 +108,11 @@
                 time = time.split(timeRegex)
                 date = months[date[1] - 1] + " " + date[2]
                 time = time[0] + ":" + time[1]
-                played_at = date + " | " + time
+                played_at = date + " " + time
                 tracks.push({
                     "id": id,
                     "played_at": played_at,
-                    "valence": String(valence)
+                    "valence": valence
                 })
             }
             drawValenceChart()
