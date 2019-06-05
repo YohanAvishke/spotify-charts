@@ -31,6 +31,20 @@
         "use strict"
 
         let tracks = []
+        let months = [
+            'January',
+            'February',
+            'March',
+            'April',
+            'May',
+            'June',
+            'July',
+            'August',
+            'September',
+            'October',
+            'November',
+            'December'
+        ];
 
         function authorize() {
             if (error) {
@@ -39,7 +53,7 @@
                 if (access_token) {
                     // let todayUnixTimeStamp = new Date()
                     // todayUnixTimeStamp.setHours(0, 0, 1)
-                    renderData(null, "/me/player/recently-played", null, false, getTracks, null, processLogin)
+                    renderData(null, "/me/player/recently-played?limit=10", null, false, getTracks, null, processLogin)
                 } else {
                     // render initial screen
                     processLogin(false)
@@ -81,10 +95,20 @@
             let temp = tracks
             tracks = []
             let features = data.audio_features
+            let played_atRegex = /[T.]/g
+            let dateRegex = /-/g
+            let timeRegex = /:/g
             for (let i = 0; i < features.length; i++) {
                 let valence = features[i].valence
                 let {id, played_at} = temp[i]
-                // console.log(played_at.split(/\[T]/g)
+                played_at = played_at.split(played_atRegex)
+                let date = played_at[0]
+                let time = played_at[1]
+                date = date.split(dateRegex)
+                time = time.split(timeRegex)
+                date = months[date[1] - 1] + " " + date[2]
+                time = time[0] + ":" + time[1]
+                played_at = date + " | " + time
                 tracks.push({
                     "id": id,
                     "played_at": played_at,
