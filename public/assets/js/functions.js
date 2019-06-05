@@ -2,6 +2,7 @@
 
 let spotify_api = 'https://api.spotify.com/v1'
 
+let color = Chart.helpers.color;
 let params = getHashParams()
 let access_token = params.access_token,
     refresh_token = params.refresh_token,
@@ -81,14 +82,16 @@ function renderChart(canvas, type, labels, data, successPreCall = null) {
                 labels: labels,
                 datasets: [{
                     label: 'Valency',
-                    backgroundColor: 'rgb(54, 162, 235)',
-                    borderColor: 'rgb(54, 162, 235)',
-                    fill: false,
+                    backgroundColor: color(window.chartColors['blue']).alpha(0.2).rgbString(),
+                    borderColor: window.chartColors['blue'],
                     data: data,
                 }],
             },
             options: {
-                responsive: true, // Instruct chart js to respond nicely.
+                responsive: true,
+                legend: {
+                    position: 'bottom',
+                },
                 title: {
                     display: true,
                     text: 'Valence chart'
