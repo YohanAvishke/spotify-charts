@@ -6,7 +6,7 @@
  * For more information, read
  * https://developer.spotify.com/web-api/authorization-guide/#authorization_code_flow
  */
-
+require('dotenv').config();
 let express = require('express') // Express web server framework
 let request = require('request') // "Request" library
 let cors = require('cors')

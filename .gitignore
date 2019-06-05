@@ -1,9 +1,11 @@
 # intellij
 .idea/
 
-#node
+# node
 node_modules/
 package-lock.json
+
+# other
 .DS_Store
 .env
 public/assets/dist/

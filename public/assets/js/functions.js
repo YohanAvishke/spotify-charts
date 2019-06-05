@@ -81,7 +81,7 @@ function renderChart(canvas, type, labels, data, successPreCall = null) {
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Valency',
+                    label: 'Valence',
                     backgroundColor: color(window.chartColors['blue']).alpha(0.2).rgbString(),
                     borderColor: window.chartColors['blue'],
                     data: data,
